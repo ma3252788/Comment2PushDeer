@@ -7,13 +7,15 @@
 配置`PDKEY`即可
 
 
-```
+```bash
 /*
  * PushDeer推送评论通知
+ *
  * @package Comment2PushDeer
  * @author 马春杰
  * @version 1.0.0
  * @link https://www.machunjie.com
  * @link_gitee https://gitee.com/public_sharing/Comment2PushDeer
+ * @link_github https://github.com/ma3252788/Comment2PushDeer
  */
 ```

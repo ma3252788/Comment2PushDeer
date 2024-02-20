@@ -22,7 +22,7 @@ class Comment2PushDeer_Plugin implements Typecho_Plugin_Interface
     public static function activate()
     {
     
-        Typecho_Plugin::factory('Widget_Feedback')->comment = array('Comment2PushDeer_Plugin', 'sc_send');
+        Typecho_Plugin::factory('Widget_Feedback')->finishComment = array('Comment2PushDeer_Plugin', 'sc_send');
         Typecho_Plugin::factory('Widget_Feedback')->trackback = array('Comment2PushDeer_Plugin', 'sc_send');
         Typecho_Plugin::factory('Widget_XmlRpc')->pingback = array('Comment2PushDeer_Plugin', 'sc_send');
         
@@ -62,7 +62,7 @@ class Comment2PushDeer_Plugin implements Typecho_Plugin_Interface
     public static function personalConfig(Typecho_Widget_Helper_Form $form){}
 
     /**
-     * 微信推送
+     * PushDeer推送
      *
      * @access public
      * @param array $comment 评论结构
@@ -71,33 +71,39 @@ class Comment2PushDeer_Plugin implements Typecho_Plugin_Interface
      */
     public static function sc_send($comment, $post)
     {
-        $options = Typecho_Widget::widget('Widget_Options');
-
-        $PDKEY = $options->plugin('Comment2PushDeer')->PDKEY;
-
-        $text = "有新评论啦";
-        $desp = "**".$comment['author']."** 在你的博客中说到：\n\n > ".$comment['text'];
-
-
-        $postdata = http_build_query(
-            array(
-                'text' => $text,
-                'desp' => $desp,
-                'pushkey' => $PDKEY,
-                )
-            );
-
-        $opts = array('http' =>
-            array(
-                'method'  => 'POST',
-                'header'  => 'Content-type: application/x-www-form-urlencoded',
-                'content' => $postdata
-                )
-            );
-        $context  = stream_context_create($opts);
+        if ($comment['status'] == 'approved') {
+            // 发送通知逻辑
         
-        $result = file_get_contents('https://api2.pushdeer.com/message/push', false, $context);
+            $options = Typecho_Widget::widget('Widget_Options');
+    
+            $PDKEY = $options->plugin('Comment2PushDeer')->PDKEY;
+    
+            $text = "有新评论啦";
+            $desp = "**".$comment['author']."** 在你的博客中说到：\n\n > ".$comment['text'];
+    
+    
+            $postdata = http_build_query(
+                array(
+                    'text' => $text,
+                    'desp' => $desp,
+                    'pushkey' => $PDKEY,
+                    )
+                );
+    
+            $opts = array('http' =>
+                array(
+                    'method'  => 'POST',
+                    'header'  => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $postdata
+                    )
+                );
+            $context  = stream_context_create($opts);
+            
+            $result = file_get_contents('https://api2.pushdeer.com/message/push', false, $context);
+            
+            return  $comment;
+            
+        }
         
-        return  $comment;
     }
 }

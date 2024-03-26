@@ -5,7 +5,7 @@
  *
  * @package Comment2PushDeer
  * @author 马春杰
- * @version 1.0.1
+ * @version 1.0.2
  * @link https://www.machunjie.com/opensource/1662.html
  * @link_gitee https://gitee.com/public_sharing/Comment2PushDeer
  * @link_github https://github.com/ma3252788/Comment2PushDeer
@@ -71,7 +71,7 @@ class Comment2PushDeer_Plugin implements Typecho_Plugin_Interface
      */
     public static function sc_send($comment, $post)
     {
-        if ($comment['status'] == 'approved') {
+        if ($comment->status == 'approved') {
             // 发送通知逻辑
         
             $options = Typecho_Widget::widget('Widget_Options');
@@ -79,7 +79,7 @@ class Comment2PushDeer_Plugin implements Typecho_Plugin_Interface
             $PDKEY = $options->plugin('Comment2PushDeer')->PDKEY;
     
             $text = "有新评论啦";
-            $desp = "**".$comment['author']."** 在你的博客中说到：\n\n > ".$comment['text'];
+            $desp = "**".$comment->author."** 在你的博客中说到：\n\n > ".$comment->text;
     
     
             $postdata = http_build_query(
